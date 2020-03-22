@@ -1,5 +1,5 @@
 const express = require('express')
-const bootcampController = require('../controllers/bootcamp')
+const bootcampController = require('../controllers/bootcamps')
 const router = express.Router()
 
 router
@@ -9,6 +9,7 @@ router
 
 router
   .route('/:id')
+  .get(bootcampController.getBootcamp)
   .put(bootcampController.updateBootcamp)
   .delete(bootcampController.deleteBootcamp)
 

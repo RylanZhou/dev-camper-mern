@@ -1,9 +1,10 @@
 const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
-const colors = require('colors')
+require('colors')
+
 const connectDB = require('./config/db')
-// const logger = require('./middleware/logger') // Customized middleware
+const logger = require('./middleware/logger') // Customized middleware
 
 // Load env variables
 dotenv.config({ path: './config/config.env' })
@@ -17,8 +18,12 @@ const bootcamps = require('./routes/bootcamps')
 // Create server instance
 const app = express()
 
+// Body Parser
+app.use(express.json())
+
 // Logging middleware
 if (process.env.NODE_ENV === 'development') {
+  app.use(logger)
   app.use(morgan('dev'))
 }
 
@@ -31,7 +36,6 @@ const server = app.listen(
   PORT,
   console.log(
     `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.blue
-      .bold
   )
 )
 
