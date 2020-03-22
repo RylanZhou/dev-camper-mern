@@ -40,7 +40,7 @@ const BootcampSchema = new mongoose.Schema({
     // GeoJSON Point, https://mongoosejs.com/docs/geojson.html
     type: {
       type: String,
-      enums: ['Point'] // "Point" is the only value available,
+      enum: ['Point'] // "Point" is the only value available,
       // required: true
     },
     coordinates: {

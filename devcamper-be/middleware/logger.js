@@ -1,5 +1,3 @@
-require('colors')
-
 /**
  * @description Log request url to console
  */
@@ -9,7 +7,8 @@ const logger = (request, response, next) => {
   //     request.originalUrl
   //   }`
   // )
-  console.log('-'.bold.repeat(100))
+  console.log()
+  console.log('➡️', '-'.bold.repeat(100))
   next()
 }
 
