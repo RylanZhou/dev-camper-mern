@@ -26,7 +26,7 @@ exports.getBootcamps = asyncHandler(async (request, response, next) => {
   let queryStr = JSON.stringify(queryCopy)
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`)
 
-  let query = Bootcamp.find(JSON.parse(queryStr))
+  let query = Bootcamp.find(JSON.parse(queryStr)).populate('courses')
 
   // If there is a 'select' field from the request, only pull out the specified fields.
   // Query examples:
@@ -150,11 +150,7 @@ exports.createBootcamp = asyncHandler(async (request, response, next) => {
  * @access      Private
  */
 exports.updateBootcamp = asyncHandler(async (request, response, next) => {
-  const bootcamp = await Bootcamp.findByIdAndUpdate(
-    request.params.id,
-    request.body,
-    { new: true, runValidators: true }
-  )
+  let bootcamp = await Bootcamp.findById(request.params.id)
 
   if (!bootcamp) {
     return next(
@@ -164,6 +160,11 @@ exports.updateBootcamp = asyncHandler(async (request, response, next) => {
       )
     )
   }
+
+  bootcamp = await Bootcamp.findByIdAndUpdate(request.params.id, request.body, {
+    new: true,
+    runValidators: true
+  })
 
   response.status(200).json({ success: true, data: bootcamp })
 })
@@ -174,7 +175,7 @@ exports.updateBootcamp = asyncHandler(async (request, response, next) => {
  * @access      Private
  */
 exports.deleteBootcamp = asyncHandler(async (request, response, next) => {
-  const bootcamp = await Bootcamp.findByIdAndDelete(request.params.id)
+  const bootcamp = await Bootcamp.findById(request.params.id)
 
   if (!bootcamp) {
     return next(
@@ -184,6 +185,9 @@ exports.deleteBootcamp = asyncHandler(async (request, response, next) => {
       )
     )
   }
+
+  // In order to trigger the pre('remove') hook. findByIdAndDelete will not trigger.
+  await bootcamp.remove()
 
   response.status(200).json({ success: true, data: bootcamp })
 })

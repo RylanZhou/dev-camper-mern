@@ -15,9 +15,6 @@ dotenv.config({ path: './config/config.env' })
 // Connect to database
 connectDB()
 
-// Route files
-const bootcamps = require('./routes/bootcamps')
-
 // Create server instance
 const app = express()
 
@@ -30,8 +27,13 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
 
+// Route files
+const bootcamps = require('./routes/bootcamps')
+const courses = require('./routes/courses')
+
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps)
+app.use('/api/v1/courses', courses)
 
 // Error handler middleware
 app.use(errorHandler)
