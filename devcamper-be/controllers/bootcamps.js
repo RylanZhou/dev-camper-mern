@@ -68,6 +68,25 @@ exports.getBootcampsInRadius = asyncHandler(async (request, response, next) => {
  * @access      Private
  */
 exports.createBootcamp = asyncHandler(async (request, response, next) => {
+  // Have already passed protect middleware so there should be a user id in the request
+  // Add user to request.body
+  request.body.user = request.user.id
+
+  // Check for published bootcamp
+  const publishedBootcamp = await Bootcamp.findOne({ user: request.user.id })
+
+  // If the user is not an admin, they can only add one bootcamp
+  if (publishedBootcamp && request.user.role !== 'admin') {
+    console.log(publishedBootcamp.name)
+    // The user is a publisher
+    return next(
+      new ErrorResponse(
+        `The user with ID ${request.user.id} has already published a bootcamp.`,
+        400
+      )
+    )
+  }
+
   const bootcamp = await Bootcamp.create(request.body)
   response.status(201).json({
     success: true,
@@ -88,6 +107,20 @@ exports.updateBootcamp = asyncHandler(async (request, response, next) => {
       new ErrorResponse(
         `Bootcamp not found with id of ${request.params.id}`,
         404
+      )
+    )
+  }
+
+  // Make sure user is bootcamp owner
+  // ! bootcamp.user is an ObjectId so we have to convert it to string
+  if (
+    bootcamp.user.toString() !== request.user.id &&
+    request.user.role !== 'admin'
+  ) {
+    return next(
+      new ErrorResponse(
+        `User ${request.user.id} is not authorized to update this bootcamp.`,
+        401
       )
     )
   }
@@ -117,6 +150,20 @@ exports.deleteBootcamp = asyncHandler(async (request, response, next) => {
     )
   }
 
+  // Make sure user is bootcamp owner
+  // ! bootcamp.user is an ObjectId so we have to convert it to string
+  if (
+    bootcamp.user.toString() !== request.user.id &&
+    request.user.role !== 'admin'
+  ) {
+    return next(
+      new ErrorResponse(
+        `User ${request.user.id} is not authorized to update this bootcamp.`,
+        401
+      )
+    )
+  }
+
   // In order to trigger the pre('remove') hook. findByIdAndDelete will not trigger.
   await bootcamp.remove()
 
@@ -140,6 +187,20 @@ exports.uploadBootcampPhoto = asyncHandler(async (request, response, next) => {
       new ErrorResponse(
         `Bootcamp not found with id of ${request.params.id}`,
         404
+      )
+    )
+  }
+
+  // Make sure user is bootcamp owner
+  // ! bootcamp.user is an ObjectId so we have to convert it to string
+  if (
+    bootcamp.user.toString() !== request.user.id &&
+    request.user.role !== 'admin'
+  ) {
+    return next(
+      new ErrorResponse(
+        `User ${request.user.id} is not authorized to update this bootcamp.`,
+        401
       )
     )
   }

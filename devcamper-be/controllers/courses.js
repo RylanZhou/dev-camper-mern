@@ -54,13 +54,29 @@ exports.getCourse = asyncHandler(async (request, response, next) => {
  * @access      Private
  */
 exports.addCourse = asyncHandler(async (request, response, next) => {
+  // Have already passed the protect middleware so there should be userId in the request
+  request.body.user = request.user.id
   request.body.bootcamp = request.params.bootcampId
 
   const bootcamp = await Bootcamp.findById(request.params.bootcampId)
 
   if (!bootcamp) {
     return next(
-      new ErrorResponse(`No bootcamp with id ${request.params.bootcampId}`)
+      new ErrorResponse(`No bootcamp with id ${request.params.bootcampId}`, 404)
+    )
+  }
+
+  // Make sure user is bootcamp owner
+  // ! bootcamp.user is an ObjectId so we have to convert it to string
+  if (
+    bootcamp.user.toString() !== request.user.id &&
+    request.user.role !== 'admin'
+  ) {
+    return next(
+      new ErrorResponse(
+        `User ${request.user.id} is not authorized to add a course to bootcamp ${bootcamp._id}.`,
+        401
+      )
     )
   }
 
@@ -81,7 +97,23 @@ exports.updateCourse = asyncHandler(async (request, response, next) => {
   let course = await Course.findById(request.params.id)
 
   if (!course) {
-    return next(new ErrorResponse(`No course with id ${request.params.id}`))
+    return next(
+      new ErrorResponse(`No course with id ${request.params.id}`, 404)
+    )
+  }
+
+  // Make sure user is course owner
+  // ! course.user is an ObjectId so we have to convert it to string
+  if (
+    course.user.toString() !== request.user.id &&
+    request.user.role !== 'admin'
+  ) {
+    return next(
+      new ErrorResponse(
+        `User ${request.user.id} is not authorized to update course ${course._id}.`,
+        401
+      )
+    )
   }
 
   course = await Course.findByIdAndUpdate(request.params.id, request.body, {
@@ -106,6 +138,20 @@ exports.deleteCourse = asyncHandler(async (request, response, next) => {
   if (!course) {
     return next(
       new ErrorResponse(`Course not found with id of ${request.params.id}`, 404)
+    )
+  }
+
+  // Make sure user is course owner
+  // ! course.user is an ObjectId so we have to convert it to string
+  if (
+    course.user.toString() !== request.user.id &&
+    request.user.role !== 'admin'
+  ) {
+    return next(
+      new ErrorResponse(
+        `User ${request.user.id} is not authorized to delete course ${course._id}.`,
+        401
+      )
     )
   }
 

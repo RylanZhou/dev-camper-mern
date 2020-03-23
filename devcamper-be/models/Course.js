@@ -27,14 +27,19 @@ const CourseSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  createAt: {
+  createdAt: {
     type: Date,
     default: Date.now
   },
-  // Reference
+  // Relationship
   bootcamp: {
     type: mongoose.Schema.ObjectId,
     ref: 'Bootcamp', // Which model to set reference to
+    required: true
+  },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User', // Which model to set reference to
     required: true
   }
 })
