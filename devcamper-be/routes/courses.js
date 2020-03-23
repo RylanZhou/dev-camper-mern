@@ -2,7 +2,7 @@ const express = require('express')
 const courseController = require('../controllers/courses')
 const Course = require('../models/Course')
 const advancedResults = require('../middleware/advancedResults')
-
+const { protect, authorize } = require('../middleware/auth')
 // Set mergeParams to true in order to receive params redirected from other routers
 const router = express.Router({ mergeParams: true })
 
@@ -20,12 +20,16 @@ router
     ),
     courseController.getCourses
   )
-  .post(courseController.addCourse)
+  .post(protect, authorize('publisher', 'admin'), courseController.addCourse)
 
 router
   .route('/:id')
   .get(courseController.getCourse)
-  .put(courseController.updateCourse)
-  .delete(courseController.deleteCourse)
+  .put(protect, authorize('publisher', 'admin'), courseController.updateCourse)
+  .delete(
+    protect,
+    authorize('publisher', 'admin'),
+    courseController.deleteCourse
+  )
 
 module.exports = router

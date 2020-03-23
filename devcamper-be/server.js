@@ -3,6 +3,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
 const fileUpload = require('express-fileupload')
+const cookieParser = require('cookie-parser')
 require('colors')
 
 const connectDB = require('./config/db')
@@ -20,8 +21,9 @@ connectDB()
 // Create server instance
 const app = express()
 
-// Body Parser
+// Body Parser and Cookie Parser
 app.use(express.json())
+app.use(cookieParser())
 
 // Logging middleware
 if (process.env.NODE_ENV === 'development') {
@@ -38,10 +40,12 @@ app.use(express.static(path.join(__dirname, 'public')))
 // Route files
 const bootcamps = require('./routes/bootcamps')
 const courses = require('./routes/courses')
+const auth = require('./routes/auth')
 
 // Mount routers
 app.use('/api/v1/bootcamps', bootcamps)
 app.use('/api/v1/courses', courses)
+app.use('/api/v1/auth', auth)
 
 // Error handler middleware
 app.use(errorHandler)

@@ -8,7 +8,7 @@ const logger = (request, response, next) => {
   //   }`
   // )
   console.log()
-  console.log('➡️', '-'.bold.repeat(100))
+  console.log('➡️', '/'.gray.repeat(100))
   next()
 }
 

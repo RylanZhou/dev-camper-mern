@@ -28,7 +28,7 @@ const errorHandler = (error, request, response, next) => {
 
   response.status(err.statusCode || 500).json({
     success: false,
-    error: err.message || 'Server Error'
+    error: err.statusCode ? err.message : 'Server Error'
   })
 }
 
