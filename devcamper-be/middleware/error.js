@@ -2,14 +2,14 @@ const ErrorResponse = require('../utils/ErrorResponse')
 
 const errorHandler = (error, request, response, next) => {
   let err = { ...error }
+  err.message = error.message // ! Parent class property is not destructible
 
   // Log to console
   console.log(error.stack.red)
 
-  // Mongoose bad ObjectId
   if (error.name === 'CastError') {
-    const message = `Resource not found with id of ${error.value}`
-    err = new ErrorResponse(message, 404)
+    const message = `Bad Request`
+    err = new ErrorResponse(message, 400)
   }
 
   // Mongoose duplicated key

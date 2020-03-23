@@ -1,6 +1,8 @@
+const path = require('path')
 const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
+const fileUpload = require('express-fileupload')
 require('colors')
 
 const connectDB = require('./config/db')
@@ -27,6 +29,12 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
 
+// File upload
+app.use(fileUpload())
+
+// Set static folder, visit this static folder by localhost:5000/uploads
+app.use(express.static(path.join(__dirname, 'public')))
+
 // Route files
 const bootcamps = require('./routes/bootcamps')
 const courses = require('./routes/courses')
@@ -49,7 +57,7 @@ const server = app.listen(
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (error, promise) => {
-  console.log(`Error: ${error.message}`.red)
+  console.log(`${error.name}: ${error.message}`.red)
   // Close server & exit process
   server.close(() => process.exit(1))
 })
