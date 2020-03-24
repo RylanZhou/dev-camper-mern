@@ -39,7 +39,7 @@ exports.getUser = asyncHandler(async (request, response, next) => {
 exports.createUser = asyncHandler(async (request, response, next) => {
   const user = await User.create(request.body)
 
-  response.status(200).json({
+  response.status(201).json({
     success: true,
     data: user
   })
