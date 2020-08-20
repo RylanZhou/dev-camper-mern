@@ -10,7 +10,7 @@
   "author": "Rylan Zhou",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^4.0.1",
+    "bcrypt": "^5.0.0",
     "colors": "^1.4.0",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
